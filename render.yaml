@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: family-photo-archive
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py --host 0.0.0.0
+    disk:
+      name: family-photo-storage
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+    envVars:
+      - key: ARCHIVE_DATA_DIR
+        value: /opt/render/project/src/data
+      - key: ARCHIVE_UPLOAD_DIR
+        value: /opt/render/project/src/data/uploads
+      - key: ARCHIVE_DB_PATH
+        value: /opt/render/project/src/data/archive.db
+      - key: ARCHIVE_ADMIN_USER
+        value: Admin
+      - key: ARCHIVE_ADMIN_PASSWORD
+        value: Admin123
+      - key: ARCHIVE_SECRET_KEY
+        generateValue: true

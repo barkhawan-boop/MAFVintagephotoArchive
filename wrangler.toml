@@ -1,0 +1,7 @@
+name = "vintagefamilyphotos"
+pages_build_output_dir = "."
+compatibility_date = "2026-05-16"
+
+[[kv_namespaces]]
+binding = "PHOTO_METADATA"
+id = "fd7f32de96bc425a86cc767bf864daee"
