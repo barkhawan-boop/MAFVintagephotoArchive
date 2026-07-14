@@ -20,7 +20,18 @@
         local("Sarchia_Baran"),
         url("/static/fonts/Sarchia_Baran.ttf") format("truetype");
     font-style: normal;
-    font-weight: 400 900;
+    font-weight: 400;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Sarchia Baran";
+    src:
+        local("Sarchia Baran Bold"),
+        local("Sarchia_Baran-Bold"),
+        url("/static/fonts/Sarchia_Baran-Bold.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 700 900;
     font-display: swap;
 }
 
