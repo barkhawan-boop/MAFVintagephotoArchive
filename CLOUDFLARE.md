@@ -37,6 +37,13 @@ Optional environment variables:
 - Root directory: leave empty
 - Build command: leave empty
 - Build output directory: leave empty
+- Deploy command: leave empty / None for a normal Git-connected Pages build
+
+Do not use `npx wrangler deploy` as the Pages deploy command. That command is for Workers and fails for this repo because the app is a Pages site with a `functions/` API folder. If you deploy manually from your computer, use:
+
+```powershell
+npx wrangler pages deploy . --project-name vintagephotoarchive --branch main
+```
 
 ## Routes
 
