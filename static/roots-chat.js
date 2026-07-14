@@ -1,5 +1,5 @@
 (() => {
-    const dataUrl = "/static/roots-knowledge.json?v=pdf-rag-v23";
+    const dataUrl = "/static/roots-knowledge.json?v=pdf-rag-v24";
     const rootsPanel = document.getElementById("rootsPanel");
     const rootsForm = document.getElementById("rootsChatForm");
     const rootsQuestion = document.getElementById("rootsQuestion");
@@ -7,6 +7,8 @@
     const rootsStatus = document.getElementById("rootsStatus");
     const rootsStats = document.getElementById("rootsStats");
     const rootsAssets = document.getElementById("rootsAssets");
+    const rootsBookMeta = document.getElementById("rootsBookMeta");
+    const rootsTopics = document.getElementById("rootsTopics");
     const rootsSuggestions = document.querySelectorAll("[data-roots-question]");
 
     if (!rootsPanel || !rootsForm || !rootsQuestion || !rootsMessages) {
@@ -242,6 +244,15 @@
     function wantsPersonIdentity(question) {
         return hasConcept(question, [
             "کێیە", "کییە", "کێیه", "who is", "ژیاننامە", "ژیاننامه", "ناسراو", "پێناسە",
+        ]);
+    }
+
+    function wantsBookAuthor(question) {
+        return hasConcept(question, [
+            "نووسەری کتێب", "نوسەری کتێب", "نووسەری ئەم کتێب", "نوسەری ئەم کتێب",
+            "نووسەری گولزاری مێژوو", "نوسەری گولزاری مێژوو", "نووسەر", "نوسەر",
+            "کێ نووسی", "کێ نوسی", "نووسیویەتی", "نوسیویەتی", "نووسیویە", "نوسیویە",
+            "author", "who wrote", "writer",
         ]);
     }
 
@@ -491,6 +502,9 @@
     }
 
     function pdfContextEnough(question, results) {
+        if (wantsBookAuthor(question) && knowledge?.book?.author) {
+            return true;
+        }
         if (!results.length) {
             return false;
         }
@@ -675,6 +689,7 @@
             pdfContextEnough: pdfEnough,
             needsWeb: !pdfEnough,
             language: isEnglishQuestion(question) ? "en" : "ckb",
+            book: knowledge.book || {},
             matches: evidencePayload(question, results),
             places: matchedPlaces(results),
             assets: matchedAssets(question, results),
@@ -816,6 +831,25 @@
         `;
     }
 
+    function bookAuthorAnswerHtml(question, includeSources) {
+        if (!wantsBookAuthor(question) || !knowledge?.book?.author) {
+            return "";
+        }
+        const book = knowledge.book;
+        if (isEnglishQuestion(question)) {
+            return `
+                <p>According to the family PDF metadata, <strong>${escapeHtml(book.author)}</strong> wrote <em>${escapeHtml(book.title || "the book")}</em>.</p>
+                ${book.reviewer ? `<p>The review/editing credit is listed as ${escapeHtml(book.reviewer)}.</p>` : ""}
+                ${includeSources ? `<p>Source: PDF ${escapeHtml(book.source || "source file")}, book metadata.</p>` : ""}
+            `;
+        }
+        return `
+            <p>بە پێی زانیاریی کتێب، نووسەری «${escapeHtml(book.title || "گولزاری مێژوو")}» <strong>${escapeHtml(book.author)}</strong>ە.</p>
+            ${book.reviewer ? `<p>پێداچوونەوەی کتێبەکە بە ناوی ${escapeHtml(book.reviewer)} هاتووە.</p>` : ""}
+            ${includeSources ? `<p>سەرچاوە: PDF ـی ${escapeHtml(book.source || book.title || "کتێب")}, زانیاریی کتێب.</p>` : ""}
+        `;
+    }
+
     function fallbackAnswerHtml(question, results, pdfEnough, note = "") {
         const includeSources = wantsSources(question);
         const includeAssets = includeSources || wantsSourceAssets(question);
@@ -831,6 +865,14 @@
         const trees = treeLines(results, question);
         const summary = humanFallbackSummary(question, results, lineage, places);
         const personProfile = personProfileAnswerHtml(question, includeSources);
+        const bookAuthor = bookAuthorAnswerHtml(question, includeSources);
+
+        if (bookAuthor) {
+            return `
+                ${note ? `<p class="roots-ai-note">${escapeHtml(note)}</p>` : ""}
+                ${bookAuthor}
+            `;
+        }
 
         if (!pdfEnough) {
             return `

@@ -1,8 +1,9 @@
 (() => {
-    const dataUrl = "/static/roots-knowledge.json?v=pdf-rag-v23";
+    const dataUrl = "/static/roots-knowledge.json?v=pdf-rag-v24";
     const rootsPanel = document.getElementById("rootsPanel");
     const rootsStats = document.getElementById("rootsStats");
     const rootsTopics = document.getElementById("rootsTopics");
+    const rootsBookMeta = document.getElementById("rootsBookMeta");
     const rootsParts = document.getElementById("rootsParts");
     const rootsAssets = document.getElementById("rootsAssets");
 
@@ -129,6 +130,28 @@
         }).filter((topic) => topic.matchingParts.length > 0);
     }
 
+    function partIndexForPage(parts, page) {
+        if (!page) return 0;
+        const direct = parts.find((part) => part.startPage && part.endPage && page >= part.startPage && page <= part.endPage);
+        if (direct) return direct.index;
+        const next = parts.find((part) => part.startPage && part.startPage >= page);
+        if (next) return next.index;
+        return parts.length ? parts[parts.length - 1].index : 0;
+    }
+
+    function buildBookTopics(knowledge, parts) {
+        const topics = Array.isArray(knowledge.topics) ? knowledge.topics : [];
+        if (!topics.length) {
+            return buildTopicIndex(parts);
+        }
+        return topics.map((topic, index) => ({
+            id: `book-topic-${index}`,
+            label: topic.title || "بەش",
+            page: topic.page || "",
+            matchingParts: [partIndexForPage(parts, Number(topic.page) || 0)],
+        }));
+    }
+
     function assetIcon(url) {
         return /\.pdf($|\?)/i.test(url) ? "📄" : "🖼️";
     }
@@ -140,6 +163,16 @@
             <span>${knowledge.chunks.length} پارچەی سەرچاوە</span>
             <span>${knowledge.assets.length} شەجەرە و پاشکۆ</span>
         `;
+    }
+
+    function renderBookMeta(knowledge) {
+        if (!rootsBookMeta) return;
+        const book = knowledge.book || {};
+        rootsBookMeta.innerHTML = [
+            book.title ? `کتێب: ${escapeHtml(book.title)}` : "",
+            book.author ? `نووسەر: ${escapeHtml(book.author)}` : "",
+            book.reviewer ? `پێداچوونەوە: ${escapeHtml(book.reviewer)}` : "",
+        ].filter(Boolean).map((line) => `<div>${line}</div>`).join("");
     }
 
     function renderAssets(knowledge) {
@@ -160,7 +193,8 @@
         }
         rootsTopics.innerHTML = topics.map((topic) => `
             <button type="button" class="roots-topic-chip" data-jump-part="${topic.matchingParts[0]}">
-                ${escapeHtml(topic.label)}
+                <span>${escapeHtml(topic.label)}</span>
+                ${topic.page ? `<span class="roots-topic-page">ل ${escapeHtml(String(topic.page))}</span>` : ""}
             </button>
         `).join("");
         rootsTopics.querySelectorAll("[data-jump-part]").forEach((button) => {
@@ -215,8 +249,9 @@
             }
             const knowledge = await response.json();
             const parts = buildParts(knowledge.chunks || []);
-            const topics = buildTopicIndex(parts);
+            const topics = buildBookTopics(knowledge, parts);
             renderStats(knowledge);
+            renderBookMeta(knowledge);
             renderAssets(knowledge);
             renderTopics(topics);
             renderParts(parts);

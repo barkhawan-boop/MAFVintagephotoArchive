@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>ئەرشیفی وێنەی خێزانی، بنەماڵەی مامۆستا مەلا ئەمین مەلا ساڵح دوکەڵەیی</title>
     <meta name="description" content="ئەرشیفی وێنەی خێزانی، بنەماڵەی مامۆستا مەلا ئەمین مەلا ساڵح دوکەڵەیی بۆ پاراستنی یادگارییەکان، ناوەکان، ساڵەکان و چیرۆکەکان.">
-    <meta name="app-version" content="cloudflare-roots-person-rag-v23">
+    <meta name="app-version" content="cloudflare-roots-book-topics-v24">
     <style>
         :root {
             --ink: #1c1c1b;
@@ -403,24 +403,48 @@
         }
 
         .roots-topics {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
             gap: 8px;
+            max-height: 520px;
+            overflow: auto;
+            padding-inline-end: 4px;
         }
 
         .roots-topic-chip {
             border: 1px solid rgba(66, 107, 86, 0.24);
-            border-radius: 999px;
+            border-radius: 8px;
             background: rgba(66, 107, 86, 0.08);
             color: var(--leaf-dark);
             font: inherit;
             font-weight: 800;
-            padding: 7px 14px;
+            padding: 8px 12px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            text-align: start;
         }
 
         .roots-topic-chip:hover {
             background: rgba(66, 107, 86, 0.16);
+        }
+
+        .roots-topic-page,
+        .roots-book-meta {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .roots-book-meta {
+            margin-bottom: 10px;
+        }
+
+        .roots-topic-page {
+            flex: 0 0 auto;
+            font-weight: 700;
         }
 
         .roots-parts {
@@ -1112,6 +1136,7 @@
                 <div class="roots-toc-main">
                     <div class="roots-side-box">
                         <h3>بابەتەکان</h3>
+                        <div class="roots-book-meta" id="rootsBookMeta"></div>
                         <div class="roots-topics" id="rootsTopics"></div>
                     </div>
                     <div class="roots-side-box">
@@ -2094,6 +2119,6 @@
             showPanel(initial);
         }
     </script>
-    <script src="/static/roots-index.js?v=roots-toc-v1"></script>
+    <script src="/static/roots-index.js?v=roots-toc-v2"></script>
 </body>
 </html>
