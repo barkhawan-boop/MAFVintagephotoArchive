@@ -59,6 +59,50 @@
             .trim();
     }
 
+    function replaceStandalone(text, from, to) {
+        return text.replace(new RegExp(`(^|[\\s،؛؟!.()\\[\\]{}«»"])${from}(?=$|[\\s،؛؟!.()\\[\\]{}«»"])`, "gu"), `$1${to}`);
+    }
+
+    function polishSoraniOcr(text) {
+        let polished = String(text || "")
+            .replace(/[ھ]/g, "ه")
+            .replace(/ەى/g, "ەی")
+            .replace(/هى/g, "ەی")
+            .replace(/هی(?=$|[\s،؛؟!.()])/gu, "ەی")
+            .replace(/هه(?=[\s،؛؟!.()]|$)/gu, "هە")
+            .replace(/(^|[\s،؛؟!.()])ههر(?=$|[\s،؛؟!.()])/gu, "$1هەر");
+        const words = [
+            ["له", "لە"],
+            ["به", "بە"],
+            ["كه", "کە"],
+            ["ئه", "ئە"],
+            ["ده", "دە"],
+            ["وه", "وە"],
+            ["هه", "هە"],
+            ["سه", "سە"],
+            ["گه", "گە"],
+            ["مه", "مە"],
+            ["نه", "نە"],
+            ["چه", "چە"],
+            ["ره", "رە"],
+            ["ڕه", "ڕە"],
+            ["خه", "خە"],
+            ["په", "پە"],
+            ["قه", "قە"],
+            ["ته", "تە"],
+            ["بهش", "بەش"],
+            ["سهر", "سەر"],
+            ["سهرچاوه", "سەرچاوە"],
+            ["سهرچاوهی", "سەرچاوەی"],
+            ["بنهماڵه", "بنەماڵە"],
+            ["بنهماڵهی", "بنەماڵەی"],
+        ];
+        for (const [from, to] of words) {
+            polished = replaceStandalone(polished, from, to);
+        }
+        return polished;
+    }
+
     // Basic OCR clean-up: collapses accidental repeated runs of text and
     // fixes the most common Kurdish character variants, without inventing
     // or altering any actual words/facts.
@@ -83,7 +127,7 @@
             }
             if (!changed) break;
         }
-        return text.slice(0, maxLength);
+        return polishSoraniOcr(text).slice(0, maxLength);
     }
 
     function paragraphs(text) {
