@@ -1,6 +1,12 @@
 name = "vintagephotoarchive"
+main = "src/index.js"
 pages_build_output_dir = "."
 compatibility_date = "2026-05-16"
+
+[assets]
+directory = "./dist"
+binding = "STATIC_ASSETS"
+not_found_handling = "single-page-application"
 
 [[kv_namespaces]]
 binding = "PHOTO_METADATA"

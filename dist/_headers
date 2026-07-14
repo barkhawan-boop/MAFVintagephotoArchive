@@ -1,0 +1,17 @@
+/
+  Cache-Control: no-store
+
+/index.html
+  Cache-Control: no-store
+
+/upload
+  Cache-Control: no-store
+
+/gallery
+  Cache-Control: no-store
+
+/admin
+  Cache-Control: no-store
+
+/api/*
+  Cache-Control: no-store

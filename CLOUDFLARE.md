@@ -39,10 +39,18 @@ Optional environment variables:
 - Build output directory: leave empty
 - Deploy command: leave empty / None for a normal Git-connected Pages build
 
-Do not use `npx wrangler deploy` as the Pages deploy command. That command is for Workers and fails for this repo because the app is a Pages site with a `functions/` API folder. If you deploy manually from your computer, use:
+For a normal Git-connected Pages build, do not use `npx wrangler deploy`; leave the deploy command empty. If the Cloudflare project is already configured to run `npx wrangler deploy`, this repo also includes a Worker-compatible fallback in `src/index.js` and `dist/` so that command can deploy the same static site and API routes.
+
+Preferred manual Pages deploy:
 
 ```powershell
 npx wrangler pages deploy . --project-name vintagephotoarchive --branch main
+```
+
+Fallback deploy matching the current dashboard setting:
+
+```powershell
+npx wrangler deploy
 ```
 
 ## Routes
